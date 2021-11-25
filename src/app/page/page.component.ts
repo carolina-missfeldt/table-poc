@@ -48,11 +48,8 @@ export class PageComponent implements OnInit, AfterViewInit {
     
   ];
 
-  rowClassRules = {
-    'rag-green': 'data.age < 20',
-    'rag-amber': 'data.age >= 20 && data.age < 25',
-    'rag-red': 'data.age >= 25',
-};
+  rowClassRules;
+  getRowClass;
 
   frameworkComponents = {
     stateCellRenderer: StateSelectComponent,
@@ -73,6 +70,16 @@ export class PageComponent implements OnInit, AfterViewInit {
   constructor(private _dataS: DataService) { }
 
   ngOnInit(): void {
+    this.rowClassRules = {
+      'rag-red': function(params) { return params.data.age > 25; },
+      'rag-green': function(params) { return params.data.age < 25; },
+  };
+
+  this.getRowClass = params => {
+    if (params.node.rowIndex % 2 === 0) {
+        return 'my-shaded-effect';
+    }
+};
 
   }
 
@@ -119,7 +126,6 @@ export class PageComponent implements OnInit, AfterViewInit {
       row.setDataValue(editedRow.colDef.field, editedRow.value)
     });
     this.agGrid.api.hideOverlay();
-    this.agGrid.api.deselectAll()
   }
 
 }
