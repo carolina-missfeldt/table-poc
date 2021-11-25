@@ -1,0 +1,8 @@
+
+<mat-form-field>
+    <mat-select [(ngModel)]="state" (ngModelChange)="onChange($event)">
+      <mat-option *ngFor="let state of states" [value]="state.id">
+        {{state.sigla}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>

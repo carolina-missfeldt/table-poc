@@ -1,0 +1,30 @@
+<h2>Massivo de qualquer coisa</h2>
+
+<div class="container">
+    <ag-grid-angular
+        #agGrid
+        style="width: 80vw; height: 500px; margin: 100px auto 0 auto"
+        class="ag-theme-material"
+        rowSelection="multiple"
+        suppressRowClickSelection="true"
+        [rowData]="rowData"
+        [columnDefs]="columnDefs"
+        [defaultColDef]="defaultColDef"
+        [enterMovesDown]="true"
+        [enterMovesDownAfterEdit]="true"
+        [enableCellTextSelection]="true"
+        [overlayLoadingTemplate]="overlayLoadingTemplate"
+        [paginationPageSize]="100"
+        [pagination]="true"
+        [rowClassRules]="rowClassRules"
+        [frameworkComponents]="frameworkComponents"
+        (cellEditingStarted)="onCellEditingStarted($event)"
+        (cellEditingStopped)="onCellEditingStopped($event)"
+        (gridReady)="onGridReady($event)"
+        (cellValueChanged)="onCellValueChanged($event)"
+    
+    >
+    </ag-grid-angular>
+    <br>
+    <button (click)="massiveEdit()">Aplicar a todas</button>
+</div>
