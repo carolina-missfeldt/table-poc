@@ -1,15 +1,15 @@
 import { StateSelectComponent } from './../shared/state-select/state-select.component';
 import { DataService } from './http/data.service';
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ColDef } from 'ag-grid-community/dist/lib/entities/colDef';
 import { AgGridAngular } from 'ag-grid-angular';
-import { RowEditingStoppedEvent } from 'ag-grid-community/dist/lib/events';
 import { RowNode } from 'ag-grid-community/dist/lib/entities/rowNode';
 
 @Component({
   selector: 'app-page',
   templateUrl: './page.component.html',
   styleUrls: ['./page.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class PageComponent implements OnInit, AfterViewInit {
 
@@ -49,12 +49,10 @@ export class PageComponent implements OnInit, AfterViewInit {
   ];
 
   rowClassRules;
-  getRowClass;
 
   frameworkComponents = {
     stateCellRenderer: StateSelectComponent,
   };
-
 
   defaultColDef = {
     editable: true,
@@ -66,21 +64,15 @@ export class PageComponent implements OnInit, AfterViewInit {
 
   rowData: Array<any[]>;
   private _lastRowChanged: RowNode;
-
+  
   constructor(private _dataS: DataService) { }
-
+  
   ngOnInit(): void {
     this.rowClassRules = {
       'rag-red': function(params) { return params.data.age > 25; },
       'rag-green': function(params) { return params.data.age < 25; },
-  };
-
-  this.getRowClass = params => {
-    if (params.node.rowIndex % 2 === 0) {
-        return 'my-shaded-effect';
-    }
-};
-
+    };
+    
   }
 
   ngAfterViewInit(): void {
@@ -90,7 +82,6 @@ export class PageComponent implements OnInit, AfterViewInit {
 
   onCellEditingStarted(event) {
     console.log('cellEditingStarted');
-    console.log(event.data)
   }
 
   onCellEditingStopped(event) {
