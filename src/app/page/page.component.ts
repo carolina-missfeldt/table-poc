@@ -11,48 +11,21 @@ import { RowNode } from 'ag-grid-community/dist/lib/entities/rowNode';
   styleUrls: ['./page.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class PageComponent implements OnInit, AfterViewInit {
 
+export class PageComponent implements OnInit, AfterViewInit {
+  
   @ViewChild('agGrid') agGrid!: AgGridAngular;
   overlayLoadingTemplate =
-    '<span class="ag-overlay-loading-center">Carregando dados da tabela, por favor aguarde.</span>';
-
-  columnDefs: ColDef[] = [
-    {
-      field: '',
-      flex: 1,
-      maxWidth: 100,
-      checkboxSelection: true,
-      headerCheckboxSelection: true,
-      editable: false,
-    },
-    { field: 'athlete' },
-    { field: 'age' },
-    { field: 'country' },
-    { field: 'year' },
-    { field: 'date', filter: 'agDateColumnFilter' },
-    { field: 'sport' },
-    { field: 'gold' },
-    { field: 'silver' },
-    { field: 'bronze' },
-    { field: 'total' },
-    {
-      field: 'state',
-      cellRenderer: 'stateCellRenderer'
-    },
-    // {
-    //   field: 'city',
-    //   cellEditor: 'agSelectCellEditor',
-    //   cellEditorParams: this.cellCellEditorParams,
-    // },
-    
-  ];
-
+  '<span class="ag-overlay-loading-center">Carregando dados da tabela, por favor aguarde.</span>';
+  
+  columnDefs: ColDef[] = [];
+  
   rowClassRules;
-
+  
   frameworkComponents = {
     stateCellRenderer: StateSelectComponent,
   };
+  states = [];
 
   defaultColDef = {
     editable: true,
@@ -64,24 +37,60 @@ export class PageComponent implements OnInit, AfterViewInit {
 
   rowData: Array<any[]>;
   private _lastRowChanged: RowNode;
+  cellCellEditorParams;
   
-  constructor(private _dataS: DataService) { }
-  
-  ngOnInit(): void {
+  constructor(private _dataS: DataService) {
+    this.columnDefs = [
+      {
+        field: '',
+        flex: 1,
+        maxWidth: 100,
+        checkboxSelection: true,
+        headerCheckboxSelection: true,
+        editable: false,
+      },
+      { field: 'age' },
+      { field: 'gender' },
+      { field: 'address' },
+      // { field: 'athlete' },
+      // { field: 'country' },
+      // { field: 'year' },
+      // { field: 'date', filter: 'agDateColumnFilter' },
+      // { field: 'sport' },
+      // { field: 'gold' },
+      // { field: 'silver' },
+      // { field: 'bronze' },
+      // { field: 'total' },
+      {
+        field: 'city',
+        cellEditor: 'agSelectCellEditor',
+      },
+      {
+        field: 'state',
+        cellRenderer: 'stateCellRenderer',
+        editable: false,
+      }
+      
+    ];
     this.rowClassRules = {
       'rag-red': function(params) { return params.data.age > 25; },
       'rag-green': function(params) { return params.data.age < 25; },
     };
-    
+   }
+  
+  ngOnInit(): void {
   }
 
   ngAfterViewInit(): void {
     this.agGrid.api.showLoadingOverlay();
-
   }
 
   onCellEditingStarted(event) {
     console.log('cellEditingStarted');
+    if (event.column.getId() === 'state') {
+      const col = this.columnDefs.filter(item => item);
+      console.log(col)
+    }
   }
 
   onCellEditingStopped(event) {
@@ -91,15 +100,22 @@ export class PageComponent implements OnInit, AfterViewInit {
     this.massiveEdit();
 
   }
-
+  
   onCellValueChanged(params) {
     console.log(params.node)
+    if (params.column.getId() === 'state') {
+        this._dataS.getCityes(params.data.state).subscribe(res => {
+          console.log(res)
+        })
+    }
   }
 
   onGridReady(params) {
-    this._dataS.getData().subscribe(res => {
+    this._dataS.getLocalData().subscribe(res => {
       params.api.setRowData(res);
     });
+
+    this.agGrid.api.refreshCells()
   }
 
   massiveEdit(): void {
@@ -117,6 +133,6 @@ export class PageComponent implements OnInit, AfterViewInit {
       row.setDataValue(editedRow.colDef.field, editedRow.value)
     });
     this.agGrid.api.hideOverlay();
-  }
-
+  }  
 }
+

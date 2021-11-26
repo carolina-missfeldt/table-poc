@@ -1,5 +1,5 @@
 import { DataService } from './../../page/http/data.service';
-import { Component, HostListener, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
 import { AgRendererComponent, ICellRendererAngularComp } from 'ag-grid-angular/lib/interfaces';
 import { ICellRendererParams } from 'ag-grid-community/dist/lib/rendering/cellRenderers/iCellRenderer';
 
@@ -12,44 +12,41 @@ import { ICellRendererParams } from 'ag-grid-community/dist/lib/rendering/cellRe
 
 export class StateSelectComponent implements AgRendererComponent{
 
-  constructor(private _dataS: DataService) { }
-
+  constructor(private _dataS: DataService) { 
+    
+  }
+  
   state: string;
   states: Array<any> = [];
   params: ICellRendererParams
-
+  
   agInit(params: ICellRendererParams): void {
     this.params = params;
-    if(!this.states.length) {
-      this.renderFields();
-    }
+    this.state = params.value;
+    console.log(this.state)
+    this.states = [this.state]
   }
   
   renderFields() {
+    this.states = undefined;
     this._dataS.getStates().subscribe((res: any) => {
-      // console.log(res)
-        this.states = res;
-        this.params.refreshCell();
+      this.states = res.map(s => s.sigla);
+    }, error => {
+      this.states = [this.state]
     });
   }
 
-  refresh():boolean {
-    return true
+  setValue() {
+    console.log(this.state)
+    this.params.setValue(this.state);
+    console.log(this.params)
   }
 
-
-  onChange(event) {
-    // console.log(event)
-    // console.log(this.params.node)
-    this.params.node.setDataValue('state', this.state);
+  refresh():boolean {
+    console.log('teste')
+    return true
+  }
 }
 
-  getValueToDisplay(params: ICellRendererParams) {
-    return params.valueFormatted ? params.valueFormatted : params.value;
-}
 
-}
-function take(arg0: number): import("rxjs").OperatorFunction<any, unknown> {
-  throw new Error('Function not implemented.');
-}
 

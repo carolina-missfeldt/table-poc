@@ -1,8 +1,8 @@
-
 <mat-form-field>
-    <mat-select [(ngModel)]="state" (ngModelChange)="onChange($event)">
-      <mat-option *ngFor="let state of states" [value]="state.id">
-        {{state.sigla}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+  <mat-select [(ngModel)]="state" (click)="renderFields()" (ngModelChange)="setValue()">
+    <mat-option *ngIf="!states">carregando...</mat-option>
+    <mat-option *ngFor="let s of states" [value]="s">
+      {{s}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>

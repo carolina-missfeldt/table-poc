@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { mock } from './mock';
 
 @Injectable({
   providedIn: 'root'
@@ -19,5 +20,9 @@ export class DataService {
 
   getCityes(stateCode): Observable<any> {
     return this._http.get<any>(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${stateCode}/municipios`)
+  }
+
+  getLocalData() {
+    return of(mock);
   }
 }
