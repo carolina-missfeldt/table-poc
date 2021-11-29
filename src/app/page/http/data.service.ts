@@ -1,12 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { mock } from './mock';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
+
+  $states: BehaviorSubject<any> = new BehaviorSubject(null);
 
   constructor(private _http: HttpClient) { }
 
@@ -18,7 +20,7 @@ export class DataService {
     return this._http.get<any>('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome')
   }
 
-  getCityes(stateCode): Observable<any> {
+  getCities(stateCode): Observable<any> {
     return this._http.get<any>(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${stateCode}/municipios`)
   }
 

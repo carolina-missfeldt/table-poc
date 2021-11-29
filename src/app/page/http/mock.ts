@@ -49,7 +49,7 @@ export const mock =[
       address:
         '3685 Rocky Glade, Showtucket, NU, X1E-9I0, CA, (867) 371-4215',
       city: 'Adamantina',
-      state: 'SP',
+      state: 'TO',
     },
     {
       name: 'Sadiq Khan',
@@ -67,7 +67,7 @@ export const mock =[
       address:
         '2234 Sleepy Pony Mall , Drain, DC, 20078-4243, US, (202) 948-3634',
       city: 'Adamantina',
-      state: 'SP',
+      state: 'RJ',
     },
     {
       name: 'Bob Harrison',

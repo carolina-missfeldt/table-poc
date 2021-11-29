@@ -4,6 +4,7 @@ import { AfterViewInit, Component, OnInit, ViewChild, ViewEncapsulation } from '
 import { ColDef } from 'ag-grid-community/dist/lib/entities/colDef';
 import { AgGridAngular } from 'ag-grid-angular';
 import { RowNode } from 'ag-grid-community/dist/lib/entities/rowNode';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-page',
@@ -13,15 +14,15 @@ import { RowNode } from 'ag-grid-community/dist/lib/entities/rowNode';
 })
 
 export class PageComponent implements OnInit, AfterViewInit {
-  
+
   @ViewChild('agGrid') agGrid!: AgGridAngular;
   overlayLoadingTemplate =
-  '<span class="ag-overlay-loading-center">Carregando dados da tabela, por favor aguarde.</span>';
-  
+    '<span class="ag-overlay-loading-center">Carregando dados da tabela, por favor aguarde.</span>';
+
   columnDefs: ColDef[] = [];
-  
+
   rowClassRules;
-  
+
   frameworkComponents = {
     stateCellRenderer: StateSelectComponent,
   };
@@ -38,20 +39,19 @@ export class PageComponent implements OnInit, AfterViewInit {
   rowData: Array<any[]>;
   private _lastRowChanged: RowNode;
   cellCellEditorParams;
-  
+
   constructor(private _dataS: DataService) {
     this.columnDefs = [
       {
         field: '',
-        flex: 1,
-        maxWidth: 100,
+        maxWidth: 80,
         checkboxSelection: true,
         headerCheckboxSelection: true,
         editable: false,
       },
       { field: 'age' },
       { field: 'gender' },
-      { field: 'address' },
+      { field: 'address', flex: 2 },
       // { field: 'athlete' },
       // { field: 'country' },
       // { field: 'year' },
@@ -62,35 +62,63 @@ export class PageComponent implements OnInit, AfterViewInit {
       // { field: 'bronze' },
       // { field: 'total' },
       {
-        field: 'city',
+        field: 'state',
+        // cellRenderer: 'stateCellRenderer',
+        // cellRendererParams: { states: [] },
+        // editable: false,
         cellEditor: 'agSelectCellEditor',
+        cellEditorParams: { values: [] }
       },
       {
-        field: 'state',
-        cellRenderer: 'stateCellRenderer',
-        editable: false,
-      }
-      
+        field: 'city',
+        cellEditor: 'agSelectCellEditor',
+        cellEditorParams: {}
+      },
+
     ];
     this.rowClassRules = {
-      'rag-red': function(params) { return params.data.age > 25; },
-      'rag-green': function(params) { return params.data.age < 25; },
+      'rag-red': function (params) { return params.data.age > 25; },
+      'rag-green': function (params) { return params.data.age < 25; },
     };
-   }
-  
-  ngOnInit(): void {
   }
+
+  ngOnInit(): void {
+    this.getStates();
+  }
+
 
   ngAfterViewInit(): void {
     this.agGrid.api.showLoadingOverlay();
+    this._dataS.$states.pipe(filter(res => !!res)).subscribe(res => {
+      const cell = this.agGrid.api.getColumnDef('state');
+      cell.cellEditorParams.values = res.map(res => res.sigla);
+    })
+    this.agGrid.api.refreshCells({columns: ['state'] })
   }
 
-  onCellEditingStarted(event) {
-    console.log('cellEditingStarted');
-    if (event.column.getId() === 'state') {
-      const col = this.columnDefs.filter(item => item);
-      console.log(col)
+  getStates() {
+    this._dataS.getStates().subscribe((res: any) => {
+      console.log('pegou os estados')
+      this._dataS.$states.next(res)
+    }, error => {
+      this._dataS.$states.next([]);
+    });
+  }
+
+  getCities(params) {
+    const col = params.column.getId();
+    if (col == 'state' || col == 'city') {
+      console.log('pegou as cidades de:', params.data.state)
+      this._dataS.getCities(params.data.state).subscribe(res => {
+        const cell = params.api.getColumnDef('city');
+        cell.cellEditorParams.values = res.map(city => city.nome);
+      }, error => console.error(error))
     }
+  }
+
+  onCellEditingStarted(params) {
+    console.log('cellEditingStarted');
+    // this.getCities(params)
   }
 
   onCellEditingStopped(event) {
@@ -100,32 +128,27 @@ export class PageComponent implements OnInit, AfterViewInit {
     this.massiveEdit();
 
   }
-  
+
   onCellValueChanged(params) {
-    console.log(params.node)
-    if (params.column.getId() === 'state') {
-        this._dataS.getCityes(params.data.state).subscribe(res => {
-          console.log(res)
-        })
-    }
+    console.log(params)
+    this.getCities(params)
   }
 
   onGridReady(params) {
     this._dataS.getLocalData().subscribe(res => {
       params.api.setRowData(res);
     });
-
     this.agGrid.api.refreshCells()
   }
 
   massiveEdit(): void {
     const selectedRows = this.agGrid.api.getSelectedNodes();
-    if(selectedRows.length > 1 && this._lastRowChanged) {
+    if (selectedRows.length > 1 && this._lastRowChanged) {
       this._changeAll(this._lastRowChanged, selectedRows)
     }
-    
+
   }
-  
+
   private _changeAll(editedRow, selectedRows) {
     this.agGrid.api.showLoadingOverlay();
     selectedRows.forEach(row => {
@@ -133,6 +156,6 @@ export class PageComponent implements OnInit, AfterViewInit {
       row.setDataValue(editedRow.colDef.field, editedRow.value)
     });
     this.agGrid.api.hideOverlay();
-  }  
+  }
 }
 

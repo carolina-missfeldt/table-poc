@@ -1,5 +1,5 @@
-<mat-form-field>
-  <mat-select [(ngModel)]="state" (click)="renderFields()" (ngModelChange)="setValue()">
+<mat-form-field *ngIf="states">
+  <mat-select [(ngModel)]="params.value" (ngModelChange)="setValue()">
     <mat-option *ngIf="!states">carregando...</mat-option>
     <mat-option *ngFor="let s of states" [value]="s">
       {{s}}
