@@ -5,6 +5,7 @@ import { ColDef } from 'ag-grid-community/dist/lib/entities/colDef';
 import { AgGridAngular } from 'ag-grid-angular';
 import { RowEditingStoppedEvent } from 'ag-grid-community/dist/lib/events';
 import { RowNode } from 'ag-grid-community/dist/lib/entities/rowNode';
+import { SocketService } from '../services/socket.service';
 
 @Component({
   selector: 'app-page',
@@ -70,15 +71,13 @@ export class PageComponent implements OnInit, AfterViewInit {
   rowData: Array<any[]>;
   private _lastRowChanged: RowNode;
 
-  constructor(private _dataS: DataService) { }
+  constructor(private _dataS: DataService, private socketService: SocketService) { }
 
   ngOnInit(): void {
-
   }
 
   ngAfterViewInit(): void {
     this.agGrid.api.showLoadingOverlay();
-
   }
 
   onCellEditingStarted(event) {
@@ -100,8 +99,15 @@ export class PageComponent implements OnInit, AfterViewInit {
 
   onGridReady(params) {
     this._dataS.getData().subscribe(res => {
-      params.api.setRowData(res);
+      this.rowData = res;
+      params.api.setRowData(res);  
     });
+
+    this.socketService.onNewProcessedLines().subscribe((newAthlete: any) => {
+      this.rowData = [newAthlete, ...this.rowData]
+      this.agGrid.api.setRowData(this.rowData)
+    });
+
   }
 
   massiveEdit(): void {
