@@ -1,9 +1,8 @@
 import { StateSelectComponent } from './../shared/state-select/state-select.component';
 import { DataService } from './http/data.service';
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ColDef } from 'ag-grid-community/dist/lib/entities/colDef';
 import { AgGridAngular } from 'ag-grid-angular';
-import { RowEditingStoppedEvent } from 'ag-grid-community/dist/lib/events';
 import { RowNode } from 'ag-grid-community/dist/lib/entities/rowNode';
 import { SocketService } from '../services/socket.service';
 
@@ -11,6 +10,7 @@ import { SocketService } from '../services/socket.service';
   selector: 'app-page',
   templateUrl: './page.component.html',
   styleUrls: ['./page.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class PageComponent implements OnInit, AfterViewInit {
 
@@ -49,16 +49,11 @@ export class PageComponent implements OnInit, AfterViewInit {
     
   ];
 
-  rowClassRules = {
-    'rag-green': 'data.age < 20',
-    'rag-amber': 'data.age >= 20 && data.age < 25',
-    'rag-red': 'data.age >= 25',
-};
+  rowClassRules;
 
   frameworkComponents = {
     stateCellRenderer: StateSelectComponent,
   };
-
 
   defaultColDef = {
     editable: true,
@@ -70,10 +65,15 @@ export class PageComponent implements OnInit, AfterViewInit {
 
   rowData: Array<any[]>;
   private _lastRowChanged: RowNode;
-
+  
   constructor(private _dataS: DataService, private socketService: SocketService) { }
-
+  
   ngOnInit(): void {
+    this.rowClassRules = {
+      'rag-red': function(params) { return params.data.age > 25; },
+      'rag-green': function(params) { return params.data.age < 25; },
+    };
+    
   }
 
   ngAfterViewInit(): void {
@@ -82,7 +82,6 @@ export class PageComponent implements OnInit, AfterViewInit {
 
   onCellEditingStarted(event) {
     console.log('cellEditingStarted');
-    console.log(event.data)
   }
 
   onCellEditingStopped(event) {
@@ -125,7 +124,6 @@ export class PageComponent implements OnInit, AfterViewInit {
       row.setDataValue(editedRow.colDef.field, editedRow.value)
     });
     this.agGrid.api.hideOverlay();
-    this.agGrid.api.deselectAll()
   }
 
 }
