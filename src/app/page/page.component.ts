@@ -53,14 +53,6 @@ export class PageComponent implements OnInit, AfterViewInit {
       { field: 'age' },
       { field: 'gender' },
       { field: 'address', flex: 2 },
-      // { field: 'country' },
-      // { field: 'year' },
-      // { field: 'date', filter: 'agDateColumnFilter' },
-      // { field: 'sport' },
-      // { field: 'gold' },
-      // { field: 'silver' },
-      // { field: 'bronze' },
-      // { field: 'total' },
       {
         field: 'state',
         // cellRenderer: 'stateCellRenderer',
@@ -73,7 +65,6 @@ export class PageComponent implements OnInit, AfterViewInit {
         cellEditor: 'agSelectCellEditor',
         cellEditorParams: {}
       },
-
     ];
     this.rowClassRules = {
       'line-error': function (params) {
@@ -159,7 +150,6 @@ export class PageComponent implements OnInit, AfterViewInit {
     });
     setTimeout(() => {
       this.agGrid.api.hideOverlay();
-
     }, 1000)
   }
 }

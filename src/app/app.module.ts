@@ -22,9 +22,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     AppRoutingModule,
     HttpClientModule,
     AgGridModule.withComponents([StateSelectComponent]),
-    BrowserAnimationsModule
-  ],
-  exports: [
+    BrowserAnimationsModule,
     SharedModule
   ],
   providers: [],
