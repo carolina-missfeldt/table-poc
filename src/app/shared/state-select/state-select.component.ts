@@ -21,10 +21,9 @@ export class StateSelectComponent implements AgRendererComponent{
   
   agInit(params: ICellRendererParams): void {
     this.params = params;
-    this.states = this.params.states;
-    // this._dataS.$states.pipe(filter(res => !!res)).subscribe(states => {
-    //   this.states = states.map(s => s.sigla);
-    // })
+    this._dataS.$states.pipe(filter(res => !!res)).subscribe(states => {
+      this.states = states.map(s => s.sigla);
+    })
   }
   
   setValue(): void {

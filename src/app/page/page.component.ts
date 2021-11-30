@@ -64,10 +64,9 @@ export class PageComponent implements OnInit, AfterViewInit {
       {
         field: 'state',
         // cellRenderer: 'stateCellRenderer',
-        // cellRendererParams: { states: [] },
         // editable: false,
         cellEditor: 'agSelectCellEditor',
-        cellEditorParams: { values: [] }
+        cellEditorParams: {}
       },
       {
         field: 'city',
@@ -77,8 +76,8 @@ export class PageComponent implements OnInit, AfterViewInit {
 
     ];
     this.rowClassRules = {
-      'rag-red': function (params) { return params.data.age > 25; },
-      'rag-green': function (params) { return params.data.age < 25; },
+      'line-error': function (params) { return params.data.city == null; },
+      'line-edited': function (params) { return params.data.age < 25; },
     };
   }
 
@@ -96,29 +95,11 @@ export class PageComponent implements OnInit, AfterViewInit {
     this.agGrid.api.refreshCells({columns: ['state'] })
   }
 
-  getStates() {
-    this._dataS.getStates().subscribe((res: any) => {
-      console.log('pegou os estados')
-      this._dataS.$states.next(res)
-    }, error => {
-      this._dataS.$states.next([]);
-    });
-  }
-
-  getCities(params) {
-    const col = params.column.getId();
-    if (col == 'state' || col == 'city') {
-      console.log('pegou as cidades de:', params.data.state)
-      this._dataS.getCities(params.data.state).subscribe(res => {
-        const cell = params.api.getColumnDef('city');
-        cell.cellEditorParams.values = res.map(city => city.nome);
-      }, error => console.error(error))
-    }
-  }
-
   onCellEditingStarted(params) {
     console.log('cellEditingStarted');
-    // this.getCities(params)
+    if (params.column.getId() === 'city') {
+      this.getCities(params);
+    }
   }
 
   onCellEditingStopped(event) {
@@ -130,20 +111,39 @@ export class PageComponent implements OnInit, AfterViewInit {
   }
 
   onCellValueChanged(params) {
-    console.log(params)
-    this.getCities(params)
+    console.log('cellEditingChanged');
+    if (params.column.getId() === 'state') {
+      params.node.setDataValue('city', null);
+      this.getCities(params)
+    }
   }
 
   onGridReady(params) {
     this._dataS.getLocalData().subscribe(res => {
       params.api.setRowData(res);
     });
-    this.agGrid.api.refreshCells()
+  }
+
+  getStates() {
+    this._dataS.getStates().subscribe((res: any) => {
+      console.log('pegou os estados')
+      this._dataS.$states.next(res)
+    }, error => {
+      this._dataS.$states.next([]);
+    });
+  }
+
+  getCities(params) {
+      console.log('pegou as cidades de:', params.data.state)
+      this._dataS.getCities(params.data.state).subscribe(res => {
+        const cell = params.api.getColumnDef('city');
+        cell.cellEditorParams.values = res.map(city => city.nome);
+      }, error => console.error(error))
   }
 
   massiveEdit(): void {
     const selectedRows = this.agGrid.api.getSelectedNodes();
-    if (selectedRows.length > 1 && this._lastRowChanged) {
+    if (selectedRows.length >= 1 && this._lastRowChanged) {
       this._changeAll(this._lastRowChanged, selectedRows)
     }
 
@@ -155,7 +155,10 @@ export class PageComponent implements OnInit, AfterViewInit {
       console.log(row.data)
       row.setDataValue(editedRow.colDef.field, editedRow.value)
     });
-    this.agGrid.api.hideOverlay();
+    setTimeout(() => {
+      this.agGrid.api.hideOverlay();
+
+    }, 1000)
   }
 }
 
