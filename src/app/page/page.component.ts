@@ -49,10 +49,10 @@ export class PageComponent implements OnInit, AfterViewInit {
         headerCheckboxSelection: true,
         editable: false,
       },
+      { field: 'name' },
       { field: 'age' },
       { field: 'gender' },
       { field: 'address', flex: 2 },
-      // { field: 'athlete' },
       // { field: 'country' },
       // { field: 'year' },
       // { field: 'date', filter: 'agDateColumnFilter' },
@@ -76,8 +76,12 @@ export class PageComponent implements OnInit, AfterViewInit {
 
     ];
     this.rowClassRules = {
-      'line-error': function (params) { return params.data.city == null; },
-      'line-edited': function (params) { return params.data.age < 25; },
+      'line-error': function (params) {
+        return (!params.data.age || params.data.age < 18) || !params.data.city
+      },
+      'line-edited': function (params) { 
+        return params.data.age >=18 && params.data.city
+      },
     };
   }
 
@@ -105,9 +109,7 @@ export class PageComponent implements OnInit, AfterViewInit {
   onCellEditingStopped(event) {
     console.log('cellEditingStopped');
     this._lastRowChanged = event
-    console.log(event.data)
-    this.massiveEdit();
-
+    console.log(event)
   }
 
   onCellValueChanged(params) {

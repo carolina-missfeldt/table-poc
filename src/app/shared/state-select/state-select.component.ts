@@ -1,6 +1,6 @@
 import { DataService } from './../../page/http/data.service';
-import { ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
-import { AgRendererComponent, ICellRendererAngularComp } from 'ag-grid-angular/lib/interfaces';
+import { Component } from '@angular/core';
+import { AgRendererComponent } from 'ag-grid-angular/lib/interfaces';
 import { ICellRendererParams } from 'ag-grid-community/dist/lib/rendering/cellRenderers/iCellRenderer';
 import { filter } from 'rxjs/operators';
 @Component({
