@@ -5,6 +5,10 @@ import { ColDef } from 'ag-grid-community/dist/lib/entities/colDef';
 import { AgGridAngular } from 'ag-grid-angular';
 import { RowNode } from 'ag-grid-community/dist/lib/entities/rowNode';
 import { filter } from 'rxjs/operators';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { SocketService } from '../services/socket.service';
+import { dashCaseToCamelCase } from '@angular/compiler/src/util';
+import { setAriaDisabled } from 'ag-grid-community/dist/lib/utils/aria';
 
 @Component({
   selector: 'app-page',
@@ -12,7 +16,6 @@ import { filter } from 'rxjs/operators';
   styleUrls: ['./page.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-
 export class PageComponent implements OnInit, AfterViewInit {
 
   @ViewChild('agGrid') agGrid!: AgGridAngular;
@@ -37,10 +40,15 @@ export class PageComponent implements OnInit, AfterViewInit {
   };
 
   rowData: Array<any[]>;
+  authForm: FormGroup;
   private _lastRowChanged: RowNode;
   cellCellEditorParams;
 
-  constructor(private _dataS: DataService) {
+  constructor(
+    private _dataS: DataService,
+    private socketService: SocketService,
+    private fb: FormBuilder
+  ) {
     this.columnDefs = [
       {
         field: '',
@@ -66,20 +74,48 @@ export class PageComponent implements OnInit, AfterViewInit {
         cellEditorParams: {}
       },
     ];
-    this.rowClassRules = {
-      'line-error': function (params) {
-        return (!params.data.age || params.data.age < 18) || !params.data.city
-      },
-      'line-edited': function (params) { 
-        return params.data.age >=18 && params.data.city
-      },
-    };
   }
+
+  // ngOnInit(): void {
+  //   this.rowClassRules = {
+  //     'line-error': function (params) {
+  //       return (!params.data.age || params.data.age < 18) || !params.data.city
+  //     },
+  //     'line-edited': function (params) { 
+  //       return params.data.age >=18 && params.data.city
+  //     },
+  //   };
+
+
 
   ngOnInit(): void {
+    this.rowClassRules = {
+      'line-error': (params) => (!params.data.age || params.data.age < 18) || !params.data.city,
+      'line-edited': (params) => params.data.age >=18 && params.data.city,
+    }
+
     this.getStates();
+
+    this.authForm = this.fb.group({
+      contract: [''],
+      branch: [''],
+      base: [''],
+      user: [''],
+    });
   }
 
+
+  start() {
+    const auth = this.authForm.value
+    const to = Object.values(auth).join('#');
+    this.socketService.join(to);
+    this.socketService.getSocket().ioSocket.auth = auth;
+    this.socketService.getSocket().ioSocket.connect();
+
+    this.socketService.onPushNotification().subscribe((payload: { message: string }) => {
+      alert(payload.message)
+    });
+  }
 
   ngAfterViewInit(): void {
     this.agGrid.api.showLoadingOverlay();
@@ -115,6 +151,11 @@ export class PageComponent implements OnInit, AfterViewInit {
     this._dataS.getLocalData().subscribe(res => {
       params.api.setRowData(res);
     });
+
+    this.socketService.onNewProcessedLines().subscribe((newAthlete: any) => {
+      this.agGrid.api.applyTransaction({add: [newAthlete], addIndex: 0})
+    });
+
   }
 
   getStates() {
