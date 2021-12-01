@@ -10,7 +10,7 @@ export const mock =[
     {
       name: 'Mary Wilson',
       gender: 'Female',
-      age: 11,
+      age: 21,
       address:
         '3685 Rocky Glade, Showtucket, NU, X1E-9I0, CA, (867) 371-4215',
       city: 'Adamantina',
@@ -45,7 +45,7 @@ export const mock =[
     {
       name: 'Mary Wilson',
       gender: 'Female',
-      age: 11,
+      age: 21,
       address:
         '3685 Rocky Glade, Showtucket, NU, X1E-9I0, CA, (867) 371-4215',
       city: 'Adamantina',
