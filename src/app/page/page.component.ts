@@ -5,6 +5,7 @@ import { ColDef } from 'ag-grid-community/dist/lib/entities/colDef';
 import { AgGridAngular } from 'ag-grid-angular';
 import { RowNode } from 'ag-grid-community/dist/lib/entities/rowNode';
 import { SocketService } from '../services/socket.service';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-page',
@@ -64,16 +65,39 @@ export class PageComponent implements OnInit, AfterViewInit {
   };
 
   rowData: Array<any[]>;
+  authForm: FormGroup;
   private _lastRowChanged: RowNode;
   
-  constructor(private _dataS: DataService, private socketService: SocketService) { }
+  constructor(
+    private _dataS: DataService,
+    private socketService: SocketService,
+    private fb: FormBuilder) { }
   
   ngOnInit(): void {
     this.rowClassRules = {
       'rag-red': function(params) { return params.data.age > 25; },
       'rag-green': function(params) { return params.data.age < 25; },
     };
-    
+  
+    this.authForm = this.fb.group({
+      contract: [''],
+      branch: [''],
+      base: [''],
+      user: [''],
+    });
+
+  }
+
+  start() {
+    const auth = this.authForm.value
+    const to = Object.values(auth).join('#');
+    this.socketService.join(to);
+    this.socketService.getSocket().ioSocket.auth = auth;
+    this.socketService.getSocket().ioSocket.connect();
+
+    this.socketService.onPushNotification().subscribe((payload: {message: string}) => {
+      alert(payload.message)
+    });
   }
 
   ngAfterViewInit(): void {
@@ -103,8 +127,7 @@ export class PageComponent implements OnInit, AfterViewInit {
     });
 
     this.socketService.onNewProcessedLines().subscribe((newAthlete: any) => {
-      this.rowData = [newAthlete, ...this.rowData]
-      this.agGrid.api.setRowData(this.rowData)
+      this.agGrid.api.applyTransaction({add: [newAthlete], addIndex: 0})
     });
 
   }

@@ -1,5 +1,23 @@
 <h2>Massivo de qualquer coisa</h2>
 
+<form [formGroup]="authForm">
+  <fieldset>
+    <label for="contract">contrato:</label>
+    <input type="text" formControlName="contract">
+    <br />
+    <label for="contract">filial:</label>
+    <input type="text" formControlName="branch">
+    <br />
+    <label for="contract">base:</label>
+    <input type="text" formControlName="base">
+    <br />
+    <label for="contract">usuario:</label>
+    <input type="text" formControlName="user">
+
+    <button type="submit" (click)="start()">Iniciar</button>
+  </fieldset>
+</form>
+
 <div class="container">
     <ag-grid-angular
         #agGrid
@@ -7,7 +25,6 @@
         class="ag-theme-material"
         rowSelection="multiple"
         suppressRowClickSelection="true"
-        [getRowClass]="getRowClass"
         [rowData]="rowData"
         [rowClassRules]="rowClassRules"
         [columnDefs]="columnDefs"

@@ -13,10 +13,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RealtimeComponent } from './realtime/realtime.component';
 import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 import { environment } from 'src/environments/environment';
+import { ReactiveFormsModule } from '@angular/forms';
 
 const webSocketConfig: SocketIoConfig = {
   url: environment.socketUrl, // socket server url;
   options: {
+    autoConnect: false,
     transports: ['websocket']
   }
 }
@@ -30,6 +32,7 @@ const webSocketConfig: SocketIoConfig = {
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
+    ReactiveFormsModule,
     HttpClientModule,
     SocketIoModule.forRoot(webSocketConfig),
     AgGridModule.withComponents([StateSelectComponent]),

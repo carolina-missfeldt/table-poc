@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Socket } from 'ngx-socket-io';
+import { Socket, SocketIoConfig } from 'ngx-socket-io';
+import { Observable, of } from 'rxjs';
+import * as io from 'socket.io-client';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -7,11 +10,19 @@ import { Socket } from 'ngx-socket-io';
 export class SocketService {
   constructor(private socket: Socket) { }
 
-  getLines() {
-    this.socket.emit('listLines');
+  join(room) {
+    this.socket.emit('joim_room', room);
+  }
+
+  getSocket(): Socket {
+    return this.socket
   }
   
   onNewProcessedLines() {
     return this.socket.fromEvent('newProcessedLine');
+  }
+
+  onPushNotification() {
+    return this.socket.fromEvent('PUSH');
   }
 }
