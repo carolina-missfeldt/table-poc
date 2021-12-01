@@ -183,6 +183,10 @@ export class PageComponent implements OnInit, AfterViewInit {
 
   }
 
+  onRowClicked(params) {
+    console.log('cliquei na row', params)
+  }
+
   private _changeAll(editedRow, selectedRows) {
     this.agGrid.api.showLoadingOverlay();
     selectedRows.forEach(row => {
