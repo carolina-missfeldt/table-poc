@@ -41,8 +41,8 @@ export class PageComponent implements OnInit, AfterViewInit {
 
   rowData: Array<any[]>;
   authForm: FormGroup;
-  private _lastRowChanged: RowNode;
   cellCellEditorParams;
+  private _lastRowChanged: RowNode;
 
   constructor(
     private _dataS: DataService,
@@ -59,7 +59,19 @@ export class PageComponent implements OnInit, AfterViewInit {
       },
       { field: 'name' },
       { field: 'age' },
-      { field: 'gender' },
+      {
+        field: 'gender',
+        headerName: 'Se for:',
+        cellEditor: 'agSelectCellEditor',
+        cellEditorParams: {
+          values: ['homi', 'muié']
+        }
+      },
+      {
+        field: 'roupa',
+        headerName: 'Usar',
+        valueGetter: this.valueGetter,
+      },
       { field: 'address', flex: 2 },
       {
         field: 'state',
@@ -75,7 +87,7 @@ export class PageComponent implements OnInit, AfterViewInit {
       },
     ];
   }
-
+  
   ngOnInit(): void {
     this.rowClassRules = {
       'line-error': (params) => (!params.data.age || params.data.age < 18) || !params.data.city,
@@ -111,7 +123,7 @@ export class PageComponent implements OnInit, AfterViewInit {
       const cell = this.agGrid.api.getColumnDef('state');
       cell.cellEditorParams.values = res.map(res => res.sigla);
     })
-    this.agGrid.api.refreshCells({columns: ['state'] })
+    this.agGrid.api.refreshCells({columns: ['state'] });
   }
 
   onCellEditingStarted(params) {
@@ -133,6 +145,9 @@ export class PageComponent implements OnInit, AfterViewInit {
       params.node.setDataValue('city', null);
       this.getCities(params)
     }
+    if (params.column.getId() === 'gender') {
+      this.valueGetter(params);
+    }
   }
 
   onGridReady(params) {
@@ -143,7 +158,6 @@ export class PageComponent implements OnInit, AfterViewInit {
     this.socketService.onNewProcessedLines().subscribe((newAthlete: any) => {
       this.agGrid.api.applyTransaction({add: [newAthlete], addIndex: 0})
     });
-
   }
 
   getStates() {
@@ -171,9 +185,7 @@ export class PageComponent implements OnInit, AfterViewInit {
 
   }
 
-  onRowClicked(params) {
-    console.log('cliquei na row', params)
-  }
+  onRowClicked(params) {}
 
   private _changeAll(editedRow, selectedRows) {
     this.agGrid.api.showLoadingOverlay();
@@ -184,6 +196,10 @@ export class PageComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.agGrid.api.hideOverlay();
     }, 1000)
+  }
+
+  valueGetter(params) {
+    return params.data.gender.toUpperCase() == 'HOMI' ? `Azul` : 'Rosa';
   }
 }
 
