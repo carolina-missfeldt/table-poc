@@ -76,18 +76,6 @@ export class PageComponent implements OnInit, AfterViewInit {
     ];
   }
 
-  // ngOnInit(): void {
-  //   this.rowClassRules = {
-  //     'line-error': function (params) {
-  //       return (!params.data.age || params.data.age < 18) || !params.data.city
-  //     },
-  //     'line-edited': function (params) { 
-  //       return params.data.age >=18 && params.data.city
-  //     },
-  //   };
-
-
-
   ngOnInit(): void {
     this.rowClassRules = {
       'line-error': (params) => (!params.data.age || params.data.age < 18) || !params.data.city,

@@ -2,6 +2,14 @@ h2 {
     text-align: center;
 }
 
+form {
+    fieldset {
+        border: none;
+        display: flex;
+        justify-content: space-around;
+    }
+}
+
 .container {
     max-width: 80vw;
     margin: 100px auto 0 auto;

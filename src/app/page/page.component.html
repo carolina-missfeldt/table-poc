@@ -2,19 +2,26 @@
 
 <form [formGroup]="authForm">
   <fieldset>
-    <label for="contract">contrato:</label>
-    <input type="text" formControlName="contract">
+    <mat-form-field class="example-full-width">
+        <mat-label>Contrato:</mat-label>
+        <input matInput placeholder="11/12" formControlName="contract">
+      </mat-form-field>
     <br />
-    <label for="contract">filial:</label>
-    <input type="text" formControlName="branch">
+    <mat-form-field class="example-full-width">
+        <mat-label>Filial:</mat-label>
+        <input matInput placeholder="11/12" formControlName="branch">
+      </mat-form-field>
     <br />
-    <label for="contract">base:</label>
-    <input type="text" formControlName="base">
+    <mat-form-field class="example-full-width">
+        <mat-label>Base:</mat-label>
+        <input matInput placeholder="11/12" formControlName="base">
+      </mat-form-field>
     <br />
-    <label for="contract">usuario:</label>
-    <input type="text" formControlName="user">
-
-    <button type="submit" (click)="start()">Iniciar</button>
+    <mat-form-field class="example-full-width">
+        <mat-label>Usuário:</mat-label>
+        <input matInput placeholder="11/12" formControlName="user">
+      </mat-form-field>
+    <button mat-stroked-button type="submit" (click)="start()">Iniciar</button>
   </fieldset>
 </form>
 
