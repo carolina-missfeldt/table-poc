@@ -21,7 +21,8 @@
         <mat-label>Usuário:</mat-label>
         <input matInput placeholder="11/12" formControlName="user">
       </mat-form-field>
-    <button mat-stroked-button type="submit" (click)="start()">Iniciar</button>
+    <button mat-raised-button type="submit" color="primary" (click)="start()">Iniciar</button>
+    <button mat-stroked-button color="accent" (click)="stop()">Parar</button>
   </fieldset>
 </form>
 

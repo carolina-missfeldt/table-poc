@@ -87,7 +87,7 @@ export class PageComponent implements OnInit, AfterViewInit {
       },
     ];
   }
-  
+
   ngOnInit(): void {
     this.rowClassRules = {
       'line-error': (params) => (!params.data.age || params.data.age < 18) || !params.data.city,
@@ -115,6 +115,10 @@ export class PageComponent implements OnInit, AfterViewInit {
     this.socketService.onPushNotification().subscribe((payload: { message: string }) => {
       alert(payload.message)
     });
+  }
+
+  stop() {
+    this.socketService.getSocket().ioSocket.disconnect();
   }
 
   ngAfterViewInit(): void {
